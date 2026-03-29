@@ -1,72 +1,59 @@
 from tkinter import *
 from tkinter import ttk
-from tkinter import filedialog
+from logic import *
 
-# Functions
-def browse_path():
-    t_path = filedialog.askdirectory()
-    if t_path:
-        path_input.set(t_path)
+def init_window():
+    # Setting up the window, and the mainframe which contains everything
+    window      = Tk()
+    window.title("Work_Tracker")
+    mainframe   = ttk.Frame(window)
+    mainframe.grid(column=0, row=0, sticky=(N, E, S, W), padx=5, pady=5)
 
-def change_log():
-    pass
+    # Setting widgets and their positioning
+    # Row 1
+    ttk.Label(mainframe, text="Add new folder for tracking:").grid(column=1, row=1, sticky=(N, W))
+    separator_v = ttk.Separator(mainframe, orient="vertical")
+    separator_v.grid(column=2, row=1, rowspan=2, sticky=(N, S), padx=5, pady=5)
+    ttk.Label(mainframe, text="Add new website for tracking:").grid(column=3, row=1, sticky=(N, W))
 
-def open_log_path():
-    pass
+    # Row 2
+    path_input =    StringVar()
+    website_link =  StringVar()
+    path_frame =    ttk.Frame(mainframe)
+    website_frame = ttk.Frame(mainframe)
+    path_frame.grid(    column=1, row=2)
+    website_frame.grid( column=3, row=2)
+    path_entry =    ttk.Entry(path_frame, width=30, textvariable=path_input)
+    path_entry.grid(column=1, row=1, sticky=W)
+    ttk.Button(path_frame, text="file", command=lambda: browse_path(path_input)).grid(column=2, row=1, sticky=W)
+    ttk.Button(path_frame, text="add", command=lambda: add_tracking("folder", path_input, trackee_display, path_entry)).grid(column=3, row=1, sticky=W)
+    website_entry = ttk.Entry(website_frame, width=30, textvariable=website_link)
+    website_entry.grid(column=1, row=1, sticky=E)
+    ttk.Button(website_frame, text="add", command=lambda: add_tracking("website", website_link, trackee_display, website_entry)).grid(column=2, row=1, sticky=W)
 
-def add_tracking(input_type):
-    pass
+    # Row 3
+    separator_h = ttk.Separator(mainframe, orient="horizontal")
+    separator_h.grid(column=1, row=3, columnspan=3, sticky=(W, E), padx=5, pady=5)
 
-# Global Variables
-global log_path
-global log_name
+    # Row 4
+    ttk.Label(mainframe, text="Currently Tracking: ").grid(column=1, row=4, sticky=(N, W))
+    ttk.Button(mainframe, text="Remove trackee", command=lambda: remove_trackee(trackee_display)).grid(column=3, row=4, sticky=E)
 
-# Setting up the window, and the mainframe which contains everything
-window      = Tk("Work_Tracker")
-mainframe   = ttk.Frame(window)
-mainframe.grid(column=0, row=0, sticky=(N, E, S, W), padx=5, pady=5)
+    # Row 5
+    trackee_display = Listbox(mainframe, selectmode=EXTENDED)
+    trackee_display.grid(column=1, row=5, columnspan=3, sticky=(W, E))
+    display_trackees_from_file(trackee_display)
 
-# Setting widgets and their positioning
-# Row 1
-ttk.Label(mainframe, text="Add new folder for tracking:").grid(column=1, row=1, sticky=(N, W))
-separator_v = ttk.Separator(mainframe, orient="vertical")
-separator_v.grid(column=2, row=1, rowspan=2, sticky=(N, S), padx=5, pady=5)
-ttk.Label(mainframe, text="Add new website for tracking:").grid(column=3, row=1, sticky=(N, W))
+    # Row 6
+    ttk.Label(mainframe, text="Current Log").grid(column=1, row=6, sticky=(N, W))
+    ttk.Button(mainframe, text="Open File Path", command=open_log_path).grid(column=3, row=6, sticky=E)
 
-# Row 2
-path_input =    StringVar()
-website_link =  StringVar()
-path_frame =    ttk.Frame(mainframe)
-website_frame = ttk.Frame(mainframe)
-path_frame.grid(    column=1, row=2)
-website_frame.grid( column=3, row=2)
-path_entry =    ttk.Entry(path_frame, width=30, textvariable=path_input)
-path_entry.grid(column=1, row=1, sticky=W)
-ttk.Button(path_frame, text="file", command=browse_path).grid(column=2, row=1, sticky=W)
-ttk.Button(path_frame, text="add", command=add_tracking("folder")).grid(column=3, row=1, sticky=W)
-website_entry = ttk.Entry(website_frame, width=30, textvariable=website_link)
-website_entry.grid(column=1, row=1, sticky=E)
-ttk.Button(website_frame, text="add", command=add_tracking("website")).grid(column=2, row=1, sticky=W)
+    # Row 7
+    log_display = Listbox(mainframe, selectmode=EXTENDED)
+    log_display.grid(column=1, row=7, columnspan=3, sticky=(W, E))
+    display_logs_from_file(log_display)
 
-# Row 3
-separator_h = ttk.Separator(mainframe, orient="horizontal")
-separator_h.grid(column=1, row=3, columnspan=3, sticky=(W, E), padx=5, pady=5)
+    # Grid configuration
+    mainframe.columnconfigure(2, minsize=25)
 
-# Row 4
-ttk.Label(mainframe, text="Current Log").grid(column=1, row=4, sticky=(N, W))
-btn_frame = ttk.Frame(mainframe)
-btn_frame.grid(column=3, row=4, sticky=E)
-ttk.Button(btn_frame, text="Change Log", command=change_log).grid(column=1, row=1, sticky=E)
-ttk.Button(btn_frame, text="Open File Path", command=open_log_path).grid(column=2, row=1, sticky=E)
-
-# Row 5
-log_display = Text(mainframe)
-log_display.grid(column=1, row=5, columnspan=3)
-# Add log content line by line before the state is disabled
-
-log_display['state'] = 'disabled'
-
-# Grid configuration
-mainframe.columnconfigure(2, minsize=25)
-
-window.mainloop()
+    window.mainloop()
