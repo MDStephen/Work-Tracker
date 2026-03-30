@@ -33,7 +33,7 @@ def open_log_path():
 
 def add_tracking(input_type, input, listbox, entry):
     inputStr = input.get()
-    if inputStr:
+    if inputStr and inputStr not in listbox.get(0, END):
         valid_directory = input_type == "folder" and os.path.isdir(inputStr)
         valid_website = input_type == "website" and (inputStr.startswith("http://") or inputStr.startswith("https://"))
         if valid_directory or valid_website:
@@ -59,6 +59,8 @@ def remove_trackee(listbox):
         
         with open(TRACKEES_FILE, "w") as f:
             f.write("\n".join(lines))
+            if lines:
+                f.write("\n")
 
         for i in reversed(trackee_indices):
             listbox.delete(i)
